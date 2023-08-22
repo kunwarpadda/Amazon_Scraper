@@ -1,15 +1,36 @@
 from bs4 import BeautifulSoup
 import requests
+from amazoncaptcha import AmazonCaptcha
 
-url = "https://www.amazon.ca/Apple-2022-11-inch-iPad-Pro-Wi-Fi/dp/B0BJMQBQSF/ref=sr_1_4_sspa?crid=3B4J4UYNE8ORK&keywords=ipad&qid=1692515081&sprefix=ipad%2Caps%2C148&sr=8-4-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1"
 
-headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
+url = "https://www.amazon.ca/s?k=ipad&ref=nb_sb_noss"
 
-result = requests.get(url, headers=headers)
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
+
+def bypass_captcha(url):
+    response = requests.get(url, headers=HEADERS)
+    if "captcha" in response.url:
+        captcha = AmazonCaptcha.from_page_source(response.content)
+        captcha.solve()
+        response = captcha.retry_request()
+    return response
+
+result = bypass_captcha(url)
 
 soup1 = BeautifulSoup(result.content,"html.parser")
 
-soup2 = BeautifulSoup(soup1.prettify(), "html.parser")
-
-print(soup2.find(id="productTitle").get_text())
+products = soup1.find_all("div", {"data-component-type": "s-search-result"})        
+for product in products:
+    product_name_element = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')      
+    if product_name_element:
+        product_name = product_name_element.get_text(strip=True)
+        print(product_name)
+    else:
+        product_name = ""
+    product_price_element = product.find("span", {"class": "a-price-whole"})
+    if product_price_element:
+        product_price = product_price_element.get_text(strip=True)
+        print(product_price)
+    else:
+        product_price = ""
 

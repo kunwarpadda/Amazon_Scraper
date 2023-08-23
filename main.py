@@ -1,9 +1,13 @@
 from bs4 import BeautifulSoup
 import requests
 from amazoncaptcha import AmazonCaptcha
-
+import smtplib
 
 url = "https://www.amazon.ca/s?k=ipad&ref=nb_sb_noss"
+
+user_email=input('Enter your email: ')
+sender_email='nick27dhillon08@gmail.com'
+sender_email_pass='vcuqmxbrwdpzmjvf'
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
 
@@ -14,6 +18,22 @@ def bypass_captcha(url):
         captcha.solve()
         response = captcha.retry_request()
     return response
+
+def mail_send():
+    mail=smtplib.SMTP('smtp.gmail.com',587)
+    mail.ehlo()
+    mail.starttls()
+    mail.ehlo()
+    mail.login(sender_email, sender_email_pass)
+    subject= 'The Price Of Your Selected Product Just Fell Down'
+    body='Check this amazon link: '
+    
+    message = f'Subject: {subject}\n\n{body}'
+    
+    mail.sendmail(user_email, sender_email, message)
+    
+    print('The Mail Has Been Sent!')
+
 
 result = bypass_captcha(url)
 
@@ -34,3 +54,4 @@ for product in products:
     else:
         product_price = ""
 
+mail_send()

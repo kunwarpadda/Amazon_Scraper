@@ -3,10 +3,11 @@ import requests
 from amazoncaptcha import AmazonCaptcha
 import smtplib
 
-url = 'https://www.amazon.ca/s?k=BAGS&crid=2AUVOUVUAR8QI&sprefix=bags%2Caps%2C241&ref=nb_sb_noss_1'
+url = input('Type in the URL of the product you want to look up: ')
+name_item=input('Enter the item name and its specs you are looking for: ')
 code_run=True #changes to false when the page gets scraped and used in while loop
 
-user_email=input('Enter your email: ')
+user_email=input('Enter your email to notify you when the price of a similar product drops: ')
 sender_email='nick27dhillon08@gmail.com'
 sender_email_pass='vcuqmxbrwdpzmjvf'
 

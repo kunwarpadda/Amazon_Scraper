@@ -3,7 +3,8 @@ import requests
 from amazoncaptcha import AmazonCaptcha
 import smtplib
 
-url = "https://www.amazon.ca/s?k=ipad&ref=nb_sb_noss"
+url = 'https://www.amazon.ca/s?k=BAGS&crid=2AUVOUVUAR8QI&sprefix=bags%2Caps%2C241&ref=nb_sb_noss_1'
+code_run=True #changes to false when the page gets scraped and used in while loop
 
 user_email=input('Enter your email: ')
 sender_email='nick27dhillon08@gmail.com'
@@ -34,24 +35,26 @@ def mail_send():
     
     print('The Mail Has Been Sent!')
 
+while(code_run):
 
-result = bypass_captcha(url)
+    result = bypass_captcha(url)
 
-soup1 = BeautifulSoup(result.content,"html.parser")
+    soup1 = BeautifulSoup(result.content,"html.parser")
 
-products = soup1.find_all("div", {"data-component-type": "s-search-result"})        
-for product in products:
-    product_name_element = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')      
-    if product_name_element:
-        product_name = product_name_element.get_text(strip=True)
-        print(product_name)
-    else:
-        product_name = ""
-    product_price_element = product.find("span", {"class": "a-price-whole"})
-    if product_price_element:
-        product_price = product_price_element.get_text(strip=True)
-        print(product_price)
-    else:
-        product_price = ""
+    products = soup1.find_all("div", {"data-component-type": "s-search-result"})        
+    for product in products:
+        product_name_element = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')      
+        if product_name_element:
+            product_name = product_name_element.get_text(strip=True)
+            print(product_name)
+            code_run=False
+        else:
+            product_name = ""
+        product_price_element = product.find("span", {"class": "a-price-whole"})
+        if product_price_element:
+            product_price = product_price_element.get_text(strip=True)
+            print(product_price)
+        else:
+            product_price = ""
 
-mail_send()
+

@@ -38,16 +38,16 @@ def mail_send():
     
     mail.quit()
     
-# def jacc_similarity(st1, st2):
-#     str1 = set(st1.lower().split())
-#     str2 = set(st2.lower().split())
+def jacc_similarity(st1, st2):
+    str1 = set(st1.lower().split())
+    str2 = set(st2.lower().split())
     
-#     inter = len(str1.intersection(str2))
-#     union = len(str1.union(str2))
+    inter = len(str1.intersection(str2))
+    union = len(str1.union(str2))
     
-#     similarity = (inter/union) if union > 0 else 0
-#     similarity_perc = similarity * 100
-#     return similarity_perc
+    similarity = (inter/union) if union > 0 else 0
+    similarity_perc = similarity * 100
+    return similarity_perc
 
 def str_similarity(product, user_input):
     user_input=user_input.lower().split()
@@ -91,7 +91,9 @@ while(code_run):
             
         if(code_run is False):
             if(items_in_lst<=10):
-                if(str_similarity(product_name,name_item)):
-                    items_lst[product_name]=int(product_price)
+                if(jacc_similarity(product_name,name_item)):
+                    product_price=product_price[:-1]
+                    product_price_1=product_price.replace(',','')
+                    items_lst[product_name]=int(product_price_1)
                     items_in_lst+=1
-
+print(items_lst)

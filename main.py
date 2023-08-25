@@ -32,7 +32,7 @@ def mail_send():
     
     message = f'Subject: {subject}\n\n{body}'
     
-    mail.sendmail(user_email, sender_email, message)
+    mail.sendmail(sender_email, user_email, message)
     
     print('The Mail Has Been Sent!')
     
@@ -92,8 +92,9 @@ while(code_run):
         if(code_run is False):
             if(items_in_lst<=10):
                 if(jacc_similarity(product_name,name_item)):
-                    product_price=product_price[:-1]
-                    product_price_1=product_price.replace(',','')
-                    items_lst[product_name]=int(product_price_1)
+                    # product_price=product_price[:-1]
+                    # product_price_1=product_price.replace(',','')
+                    items_lst[product_name]=(product_price[:-1])
                     items_in_lst+=1
 print(items_lst)
+mail_send()

@@ -35,7 +35,35 @@ def mail_send():
     mail.sendmail(user_email, sender_email, message)
     
     print('The Mail Has Been Sent!')
+    
+    mail.quit()
+    
+# def jacc_similarity(st1, st2):
+#     str1 = set(st1.lower().split())
+#     str2 = set(st2.lower().split())
+    
+#     inter = len(str1.intersection(str2))
+#     union = len(str1.union(str2))
+    
+#     similarity = (inter/union) if union > 0 else 0
+#     similarity_perc = similarity * 100
+#     return similarity_perc
 
+def str_similarity(product, user_input):
+    user_input=user_input.lower().split()
+    product=product.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ')
+    product=product.lower().split()
+    count_found=0
+    for i in range(len(user_input)):
+        if(user_input[i] in product):
+            count_found+=1
+    perc_similarity=(count_found/len(product))*100
+    if(perc_similarity>=25):
+            return True
+    return False
+
+items_lst={}
+items_in_lst=0
 while(code_run):
 
     result = bypass_captcha(url)
@@ -44,18 +72,26 @@ while(code_run):
 
     products = soup1.find_all("div", {"data-component-type": "s-search-result"})        
     for product in products:
-        product_name_element = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')      
+        product_name_element = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')   
         if product_name_element:
             product_name = product_name_element.get_text(strip=True)
-            print(product_name)
-            code_run=False
+            if(product_name!=''):
+                code_run=False  
         else:
             product_name = ""
         product_price_element = product.find("span", {"class": "a-price-whole"})
         if product_price_element:
             product_price = product_price_element.get_text(strip=True)
-            print(product_price)
+            prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal')
+            if(prod_name in items_lst):
+                items_lst[prod_name]=product_price
+
         else:
             product_price = ""
-
+            
+        if(code_run is False):
+            if(items_in_lst<=10):
+                if(str_similarity(product_name,name_item)):
+                    items_lst[product_name]=int(product_price)
+                    items_in_lst+=1
 

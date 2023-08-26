@@ -38,6 +38,19 @@ def mail_send():
     
     mail.quit()
     
+def string_to_int(str):
+    s=''
+    for letter in str:
+        if letter.isdigit():
+            s+=letter
+    sum=0
+    len1=len(s)-1
+    for num in s:
+        num=int(num)
+        sum+=num*(10**len1)
+        len1-=1     
+    return sum
+
 def jacc_similarity(st1, st2):
     str1 = set(st1.lower().split())
     str2 = set(st2.lower().split())
@@ -92,9 +105,5 @@ while(code_run):
         if(code_run is False):
             if(items_in_lst<=10):
                 if(jacc_similarity(product_name,name_item)):
-                    # product_price=product_price[:-1]
-                    # product_price_1=product_price.replace(',','')
-                    items_lst[product_name]=(product_price[:-1])
+                    items_lst[product_name]=(string_to_int(product_price))
                     items_in_lst+=1
-print(items_lst)
-mail_send()

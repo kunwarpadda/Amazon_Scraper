@@ -76,6 +76,7 @@ def str_similarity(product, user_input):
     return False
 
 items_lst={}
+links_lst={}
 items_in_lst=0
 while(code_run):
 
@@ -101,9 +102,15 @@ while(code_run):
 
         else:
             product_price = ""
-            
+        link_element=product.find("a", class_='a-link-normal')
+        if link_element:
+            link=link_element.get('href')
+            prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal').get_text()
+            links_lst[prod_name]=link
         if(code_run is False):
             if(items_in_lst<=10):
                 if(jacc_similarity(product_name,name_item)):
                     items_lst[product_name]=(string_to_int(product_price))
                     items_in_lst+=1
+
+

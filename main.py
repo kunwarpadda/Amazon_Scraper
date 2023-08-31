@@ -2,9 +2,11 @@ from bs4 import BeautifulSoup
 import requests
 from amazoncaptcha import AmazonCaptcha
 import smtplib
+import time
 
-url = input('Type in the URL of the product you want to look up: ')
-name_item=input('Enter the item name and its specs you are looking for: ')
+
+url = "https://amazon.ca/s?k="+input('Type in the product you want to look up: ')
+name_item=input('Enter the specifications you are looking for: ')
 code_run=True #changes to false when the page gets scraped and used in while loop
 
 user_email=input('Enter your email to notify you when the price of a similar product drops: ')
@@ -28,7 +30,7 @@ def mail_send():
     mail.ehlo()
     mail.login(sender_email, sender_email_pass)
     subject= 'The Price Of Your Selected Product Just Fell Down'
-    body='Check this amazon link: '
+    body='Check this amazon link: ' + url
     
     message = f'Subject: {subject}\n\n{body}'
     
@@ -86,25 +88,25 @@ while(code_run):
 
     products = soup1.find_all("div", {"data-component-type": "s-search-result"})        
     for product in products:
-        product_name_element = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')   
-        if product_name_element:
-            product_name = product_name_element.get_text(strip=True)
+        product_name = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')   
+        if product_name:
+            product_name = product_name.get_text(strip=True)
             if(product_name!=''):
                 code_run=False  
         else:
             product_name = ""
-        product_price_element = product.find("span", {"class": "a-price-whole"})
-        if product_price_element:
-            product_price = product_price_element.get_text(strip=True)
+        product_price = product.find("span", {"class": "a-price-whole"})
+        if product_price:
+            product_price = product_price.get_text(strip=True)
             prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal')
             if(prod_name in items_lst):
                 items_lst[prod_name]=product_price
 
         else:
             product_price = ""
-        link_element=product.find("a", class_='a-link-normal')
-        if link_element:
-            link=link_element.get('href')
+        link=product.find("a", class_='a-link-normal')
+        if link:
+            link=link.get('href')
             prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal').get_text()
             links_lst[prod_name]=link
         if(code_run is False):
@@ -112,5 +114,9 @@ while(code_run):
                 if(jacc_similarity(product_name,name_item)):
                     items_lst[product_name]=(string_to_int(product_price))
                     items_in_lst+=1
-
+        
+    
+    mail_send()
+    
+    # time.sleep(100)
 

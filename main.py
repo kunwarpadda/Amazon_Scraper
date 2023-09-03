@@ -5,6 +5,7 @@ import smtplib
 
 url = input('Type in the URL of the product you want to look up: ')
 name_item=input('Enter the item name and its specs you are looking for: ')
+price=int(input('Enter the price below which you would like to be notified about deals: '))
 code_run=True #changes to false when the page gets scraped and used in while loop
 
 user_email=input('Enter your email to notify you when the price of a similar product drops: ')

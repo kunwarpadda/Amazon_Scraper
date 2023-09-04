@@ -2,6 +2,10 @@ from bs4 import BeautifulSoup
 import requests
 from amazoncaptcha import AmazonCaptcha
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 url = input('Type in the URL of the product you want to look up: ')
 name_item=input('Enter the item name and its specs you are looking for: ')
@@ -105,11 +109,12 @@ while(code_run):
         if link_element:
             link=link_element.get('href')
             prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal').get_text()
-            links_lst[prod_name]=link
+            link_temp='amazon.ca'+link
+            links_lst[prod_name]= link_temp
         if(code_run is False):
             if(items_in_lst<=10):
                 if(jacc_similarity(product_name,name_item)>20):
-                    if((string_to_int)(product_price)==0):
+                    if(((string_to_int)(product_price)==0) or (product_name=='')):
                         continue
                     items_lst[product_name]=(string_to_int(product_price))
                     items_in_lst+=1
@@ -135,14 +140,10 @@ if items_found:
             cheapest_product_price=deal_items[items]
             cheap_link=links_lst[items]
             
-    body+='Cheapest Product: '+ cheapest_product+ '\nPrice: '+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n'
+    body+='Cheapest Product: '+ cheapest_product+ '\nPrice: CA$'+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n'
     
     for  item in deal_items:
-        body+='Product Name: '+item+'\nProduct Price: '+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
-        
-    #mail_send('The Prices Of Your Amazon Product Just Fell Down', body)   
+        body+='Product Name: '+item+'\nProduct Price: CA$'+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
+    msg = MIMEText(body ,'html')    
+    mail_send('The Prices Of Your Amazon Product Just Fell Down', msg)   
     
-#print(deal_items)
-#print(items_lst)
-#print(len(deal_items))
-#print(len(items_lst))

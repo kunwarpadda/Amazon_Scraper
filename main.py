@@ -5,7 +5,7 @@ import smtplib
 
 url = input('Type in the URL of the product you want to look up: ')
 name_item=input('Enter the item name and its specs you are looking for: ')
-price=int(input('Enter the price below which you would like to be notified about deals: '))
+price_item=int(input('Enter the price below which you would like to be notified about deals: '))
 code_run=True #changes to false when the page gets scraped and used in while loop
 
 user_email=input('Enter your email to notify you when the price of a similar product drops: ')
@@ -22,14 +22,12 @@ def bypass_captcha(url):
         response = captcha.retry_request()
     return response
 
-def mail_send():
+def mail_send(subject,body):
     mail=smtplib.SMTP('smtp.gmail.com',587)
     mail.ehlo()
     mail.starttls()
     mail.ehlo()
     mail.login(sender_email, sender_email_pass)
-    subject= 'The Price Of Your Selected Product Just Fell Down'
-    body='Check this amazon link: '
     
     message = f'Subject: {subject}\n\n{body}'
     
@@ -110,8 +108,41 @@ while(code_run):
             links_lst[prod_name]=link
         if(code_run is False):
             if(items_in_lst<=10):
-                if(jacc_similarity(product_name,name_item)):
+                if(jacc_similarity(product_name,name_item)>20):
+                    if((string_to_int)(product_price)==0):
+                        continue
                     items_lst[product_name]=(string_to_int(product_price))
                     items_in_lst+=1
-
-
+                    
+items_found=False
+cheapest_product=''
+cheapest_product_price=0
+cheap_link=''
+body=''
+deal_items={}
+for product in items_lst:
+    if items_lst[product]<=price_item:
+        deal_items[product]=items_lst[product]
+        cheapest_product_price=items_lst[product]
+     
+if len(deal_items) != 0:
+    items_found=True
+    
+if items_found:
+    for items in deal_items:
+        if cheapest_product_price>deal_items[items]:
+            cheapest_product=items
+            cheapest_product_price=deal_items[items]
+            cheap_link=links_lst[items]
+            
+    body+='Cheapest Product: '+ cheapest_product+ '\nPrice: '+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n'
+    
+    for  item in deal_items:
+        body+='Product Name: '+item+'\nProduct Price: '+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
+        
+    #mail_send('The Prices Of Your Amazon Product Just Fell Down', body)   
+    
+#print(deal_items)
+#print(items_lst)
+#print(len(deal_items))
+#print(len(items_lst))

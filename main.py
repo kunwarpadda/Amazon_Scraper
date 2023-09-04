@@ -55,6 +55,8 @@ def string_to_int(str):
     return sum
 
 def jacc_similarity(st1, st2):
+    st1=st1.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
+    st2=st2.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
     str1 = set(st1.lower().split())
     str2 = set(st2.lower().split())
     
@@ -67,7 +69,7 @@ def jacc_similarity(st1, st2):
 
 def str_similarity(product, user_input):
     user_input=user_input.lower().split()
-    product=product.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ')
+    product=product.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
     product=product.lower().split()
     count_found=0
     for i in range(len(user_input)):
@@ -129,6 +131,8 @@ for product in items_lst:
     if items_lst[product]<=price_item:
         deal_items[product]=items_lst[product]
         cheapest_product_price=items_lst[product]
+        cheapest_product=product
+        cheap_link=links_lst[product]
      
 if len(deal_items) != 0:
     items_found=True
@@ -140,10 +144,9 @@ if items_found:
             cheapest_product_price=deal_items[items]
             cheap_link=links_lst[items]
             
-    body+='Cheapest Product: '+ cheapest_product+ '\nPrice: CA$'+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n'
+    body+='Cheapest Product: '+ cheapest_product+ '\nPrice: CA$'+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n\n\n'
     
     for  item in deal_items:
         body+='Product Name: '+item+'\nProduct Price: CA$'+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
     msg = MIMEText(body ,'html')    
     mail_send('The Prices Of Your Amazon Product Just Fell Down', msg)   
-    

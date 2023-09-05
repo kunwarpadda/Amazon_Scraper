@@ -3,10 +3,14 @@ import requests
 from amazoncaptcha import AmazonCaptcha
 import smtplib
 import time
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
-
-url = "https://amazon.ca/s?k="+input('Type in the product you want to look up: ')
-name_item=input('Enter the specifications you are looking for: ')
+url = "https://amazon.ca/s?k="+input('Type in the URL of the product you want to look up: ')
+name_item=input('Enter the item name and its specs you are looking for: ')
+price_item=int(input('Enter the price below which you would like to be notified about deals: '))
 code_run=True #changes to false when the page gets scraped and used in while loop
 
 user_email=input('Enter your email to notify you when the price of a similar product drops: ')
@@ -23,14 +27,12 @@ def bypass_captcha(url):
         response = captcha.retry_request()
     return response
 
-def mail_send():
+def mail_send(subject,body):
     mail=smtplib.SMTP('smtp.gmail.com',587)
     mail.ehlo()
     mail.starttls()
     mail.ehlo()
     mail.login(sender_email, sender_email_pass)
-    subject= 'The Price Of Your Selected Product Just Fell Down'
-    body='Check this amazon link: ' + url
     
     message = f'Subject: {subject}\n\n{body}'
     
@@ -54,6 +56,8 @@ def string_to_int(str):
     return sum
 
 def jacc_similarity(st1, st2):
+    st1=st1.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
+    st2=st2.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
     str1 = set(st1.lower().split())
     str2 = set(st2.lower().split())
     
@@ -66,7 +70,7 @@ def jacc_similarity(st1, st2):
 
 def str_similarity(product, user_input):
     user_input=user_input.lower().split()
-    product=product.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ')
+    product=product.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
     product=product.lower().split()
     count_found=0
     for i in range(len(user_input)):
@@ -108,15 +112,42 @@ while(code_run):
         if link:
             link=link.get('href')
             prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal').get_text()
-            links_lst[prod_name]=link
+            link_temp='amazon.ca'+link
+            links_lst[prod_name]= link_temp
         if(code_run is False):
             if(items_in_lst<=10):
-                if(jacc_similarity(product_name,name_item)):
+                if(jacc_similarity(product_name,name_item)>20):
+                    if(((string_to_int)(product_price)==0) or (product_name=='')):
+                        continue
                     items_lst[product_name]=(string_to_int(product_price))
                     items_in_lst+=1
-        
+                    
+items_found=False
+cheapest_product=''
+cheapest_product_price=0
+cheap_link=''
+body=''
+deal_items={}
+for product in items_lst:
+    if items_lst[product]<=price_item:
+        deal_items[product]=items_lst[product]
+        cheapest_product_price=items_lst[product]
+        cheapest_product=product
+        cheap_link=links_lst[product]
+     
+if len(deal_items) != 0:
+    items_found=True
     
-    mail_send()
+if items_found:
+    for items in deal_items:
+        if cheapest_product_price>deal_items[items]:
+            cheapest_product=items
+            cheapest_product_price=deal_items[items]
+            cheap_link=links_lst[items]
+            
+    body+='Cheapest Product: '+ cheapest_product+ '\nPrice: CA$'+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n\n\n'
     
-    # time.sleep(100)
-
+    for  item in deal_items:
+        body+='Product Name: '+item+'\nProduct Price: CA$'+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
+    msg = MIMEText(body ,'html')    
+    mail_send('The Prices Of Your Amazon Product Just Fell Down', msg)   

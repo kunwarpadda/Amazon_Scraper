@@ -8,8 +8,8 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
-url = "https://amazon.ca/s?k="+input('Type in the URL of the product you want to look up: ')
-name_item=input('Enter the item name and its specs you are looking for: ')
+url = "https://amazon.ca/s?k="+input('Type in the product you want to look up: ')
+name_item=input('Enter the specs you are looking for: ')
 price_item=int(input('Enter the price below which you would like to be notified about deals: '))
 code_run=True #changes to false when the page gets scraped and used in while loop
 

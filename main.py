@@ -81,73 +81,76 @@ def str_similarity(product, user_input):
             return True
     return False
 
-items_lst={}
-links_lst={}
-items_in_lst=0
-while(code_run):
-    
-    result = bypass_captcha(url)
-
-    soup1 = BeautifulSoup(result.content,"html.parser")
-
-    products = soup1.find_all("div", {"data-component-type": "s-search-result"})        
-    for product in products:
-        product_name = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')   
-        if product_name:
-            product_name = product_name.get_text(strip=True)
-            if(product_name!=''):
-                code_run=False  
-        else:
-            product_name = ""
-        product_price = product.find("span", {"class": "a-price-whole"})
-        if product_price:
-            product_price = product_price.get_text(strip=True)
-            prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal')
-            if(prod_name in items_lst):
-                items_lst[prod_name]=product_price
-
-        else:
-            product_price = ""
-        link=product.find("a", class_='a-link-normal')
-        if link:
-            link=link.get('href')
-            prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal').get_text()
-            link_temp='amazon.ca'+link
-            links_lst[prod_name]= link_temp
-        if(code_run is False):
-            if(items_in_lst<=10):
-                if(jacc_similarity(product_name,name_item)>20):
-                    if(((string_to_int)(product_price)==0) or (product_name=='')):
-                        continue
-                    items_lst[product_name]=(string_to_int(product_price))
-                    items_in_lst+=1
-                    
 items_found=False
-cheapest_product=''
-cheapest_product_price=0
-cheap_link=''
-body=''
-deal_items={}
-for product in items_lst:
-    if items_lst[product]<=price_item:
-        deal_items[product]=items_lst[product]
-        cheapest_product_price=items_lst[product]
-        cheapest_product=product
-        cheap_link=links_lst[product]
+
+while(not items_found):
+    items_lst={}
+    links_lst={}
+    items_in_lst=0
+
+    while(code_run):
+    
+        result = bypass_captcha(url)
+
+        soup1 = BeautifulSoup(result.content,"html.parser")
+
+        products = soup1.find_all("div", {"data-component-type": "s-search-result"})        
+        for product in products:
+            product_name = product.find('span', class_='a-size-base-plus a-color-base a-text-normal')   
+            if product_name:
+                product_name = product_name.get_text(strip=True)
+                if(product_name!=''):
+                    code_run=False  
+            else:
+                product_name = ""
+            product_price = product.find("span", {"class": "a-price-whole"})
+            if product_price:
+                product_price = product_price.get_text(strip=True)
+                prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal')
+                if(prod_name in items_lst):
+                    items_lst[prod_name]=product_price
+
+            else:
+                product_price = ""
+            link=product.find("a", class_='a-link-normal')
+            if link:
+                link=link.get('href')
+                prod_name=product.find('span', class_='a-size-base-plus a-color-base a-text-normal').get_text()
+                link_temp='amazon.ca'+link
+                links_lst[prod_name]= link_temp
+            if(code_run is False):
+                if(items_in_lst<=10):
+                    if(jacc_similarity(product_name,name_item)>20):
+                        if(((string_to_int)(product_price)==0) or (product_name=='')):
+                            continue
+                        items_lst[product_name]=(string_to_int(product_price))
+                        items_in_lst+=1
+                    
+    cheapest_product=''
+    cheapest_product_price=0
+    cheap_link=''
+    body=''
+    deal_items={}
+    for product in items_lst:
+        if items_lst[product]<=price_item:
+            deal_items[product]=items_lst[product]
+            cheapest_product_price=items_lst[product]
+            cheapest_product=product
+            cheap_link=links_lst[product]
      
-if len(deal_items) != 0:
-    items_found=True
+    if len(deal_items) != 0:
+        items_found=True
     
-if items_found:
-    for items in deal_items:
-        if cheapest_product_price>deal_items[items]:
-            cheapest_product=items
-            cheapest_product_price=deal_items[items]
-            cheap_link=links_lst[items]
-            
-    body+='Cheapest Product: '+ cheapest_product+ '\nPrice: CA$'+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n\n\n'
-    
-    for  item in deal_items:
-        body+='Product Name: '+item+'\nProduct Price: CA$'+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
-    msg = MIMEText(body ,'html')    
-    mail_send('The Prices Of Your Amazon Product Just Fell Down', msg)   
+    if items_found:
+        for items in deal_items:
+            if cheapest_product_price>deal_items[items]:
+                cheapest_product=items
+                cheapest_product_price=deal_items[items]
+                cheap_link=links_lst[items]
+                
+        body+='Cheapest Product: '+ cheapest_product+ '\nPrice: CA$'+ str(cheapest_product_price)+'\nLink: '+cheap_link+'\n\n\n\n'
+        
+        for  item in deal_items:
+            body+='Product Name: '+item+'\nProduct Price: CA$'+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
+        msg = MIMEText(body ,'html')    
+        mail_send('The Prices Of Your Amazon Product Just Fell Down', msg)   

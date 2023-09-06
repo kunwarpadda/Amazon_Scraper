@@ -8,8 +8,10 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
-url = "https://amazon.ca/s?k="+input('Type in the product you want to look up: ')
+name_item1 = input('Type in the product you want to look up: ')
+url="https://amazon.ca/s?k="+name_item1
 name_item=input('Enter the specs you are looking for: ')
+name_item=name_item+name_item1
 price_item=int(input('Enter the price below which you would like to be notified about deals: '))
 code_run=True #changes to false when the page gets scraped and used in while loop
 
@@ -85,7 +87,7 @@ items_lst={}
 links_lst={}
 items_in_lst=0
 while(code_run):
-
+    
     result = bypass_captcha(url)
 
     soup1 = BeautifulSoup(result.content,"html.parser")

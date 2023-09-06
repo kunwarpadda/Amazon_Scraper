@@ -7,7 +7,10 @@ import time
 
 name_item = input('Type in the name and the specs of the product you want to look up: ')
 url="https://amazon.ca/s?k="+name_item
-price_item=int(input('Enter the price below which you would like to be notified about deals: '))
+price_item=input('Enter the price range using hyphen in which you would like to be notified about deals: ')
+price_item = price_item.split("-")
+price_item[0].strip(" ")
+price_item[1].strip(" ")
 code_run=True #changes to false when the page gets scraped and used in while loop
 
 user_email=input('Enter your email to notify you when the price of a similar product drops: ')
@@ -129,7 +132,7 @@ while(not items_found):
     body=''
     deal_items={}
     for product in items_lst:
-        if items_lst[product]<=price_item:
+        if items_lst[product]<=int(price_item[1]) and items_lst[product] >= int(price_item[0])  :
             deal_items[product]=items_lst[product]
             cheapest_product_price=items_lst[product]
             cheapest_product=product

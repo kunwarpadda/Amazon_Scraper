@@ -2,10 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 from amazoncaptcha import AmazonCaptcha
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
+import time
 
 name_item = input('Type in the name and the specs of the product you want to look up: ')
 url="https://amazon.ca/s?k="+name_item
@@ -152,4 +150,7 @@ while(not items_found):
         for  item in deal_items:
             body+='Product Name: '+item+'\nProduct Price: CA$'+str(deal_items[item])+'\nProduct Link: ' + links_lst[item]+'\n\n'
         msg = MIMEText(body ,'html')    
-        mail_send('The Prices Of Your Amazon Product Just Fell Down', msg)   
+        mail_send('The Prices Of Your Amazon Product Just Fell Down', msg)
+        break
+    
+    time.sleep(1800)  

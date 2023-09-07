@@ -6,20 +6,6 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 
-name_item = input('Type in the name and the specs of the product you want to look up: ')
-url="https://amazon.ca/s?k="+name_item
-price_item=input('Enter the price range using hyphen in which you would like to be notified about deals: ')
-price_item = price_item.split("-")
-price_item[0].strip(" ")
-price_item[1].strip(" ")
-code_run=True #changes to false when the page gets scraped and used in while loop
-
-user_email=input('Enter your email to notify you when the price of a similar product drops: ')
-sender_email='nick27dhillon08@gmail.com'
-sender_email_pass='vcuqmxbrwdpzmjvf'
-
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
-
 def bypass_captcha(url):
     response = requests.get(url, headers=HEADERS)
     if "captcha" in response.url:
@@ -42,7 +28,8 @@ def mail_send(subject,body):
     print('The Mail Has Been Sent!')
     
     mail.quit()
-    
+ 
+#used to convert prices of products from string to int data type   
 def string_to_int(str):
     s=''
     for letter in str:
@@ -57,6 +44,7 @@ def string_to_int(str):
     return sum
 
 # def jacc_similarity(st1, st2):
+# #calculates the similarity perc by divind the nukmber of same words to the total number of words
 #     st1=st1.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
 #     st2=st2.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
 #     str1 = set(st1.lower().split())
@@ -69,6 +57,9 @@ def string_to_int(str):
 #     similarity_perc = similarity * 100
 #     return similarity_perc
 
+
+#calculates the similarity perc by dividing the number of words found in the product description that match the user input 
+#to the total number of words in the product description
 def str_similarity(product, user_input):
     user_input=user_input.lower().split()
     product=product.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
@@ -82,7 +73,22 @@ def str_similarity(product, user_input):
             return True
     return False
 
-items_found=False
+name_item = input('Type in the name and the specs of the product you want to look up: ')
+url="https://amazon.ca/s?k="+name_item
+price_item=input('Enter the price range using hyphen in which you would like to be notified about deals: ')
+price_item = price_item.split("-")
+price_item[0].strip(" ")
+price_item[1].strip(" ")
+
+user_email=input('Enter your email to notify you when the price of a similar product drops: ')
+sender_email='nick27dhillon08@gmail.com'
+sender_email_pass='vcuqmxbrwdpzmjvf'
+
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
+
+
+items_found=False #Determines if the code needs to run again or not. Turns True once if it finds atleast one item in the price range provided by the user
+code_run=True #changes to false when the page gets scraped and used in while loop
 
 while(not items_found):
     items_lst={}
@@ -120,7 +126,9 @@ while(not items_found):
                 link_temp='https://www.amazon.ca'+link
                 links_lst[prod_name]= link_temp
             if(code_run is False):
+                #limiting the total number of products to top 10
                 if(items_in_lst<=10):
+                    #choosing product names and prices and adding to dictionary if the str_similarity condn is true
                     if(str_similarity):
                         if(((string_to_int)(product_price)==0) or (product_name=='')):
                             continue
@@ -131,7 +139,9 @@ while(not items_found):
     cheapest_product_price=0
     cheap_link=''
     body=''
-    deal_items={}
+    deal_items={} #dictionary for items that are in the price range
+    
+    #loop used to extract products in the price range and add to deal_items
     for product in items_lst:
         if items_lst[product]<=int(price_item[1]) and items_lst[product] >= int(price_item[0])  :
             deal_items[product]=items_lst[product]

@@ -55,18 +55,18 @@ def string_to_int(str):
         len1-=1     
     return sum
 
-def jacc_similarity(st1, st2):
-    st1=st1.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
-    st2=st2.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
-    str1 = set(st1.lower().split())
-    str2 = set(st2.lower().split())
+# def jacc_similarity(st1, st2):
+#     st1=st1.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
+#     st2=st2.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
+#     str1 = set(st1.lower().split())
+#     str2 = set(st2.lower().split())
     
-    inter = len(str1.intersection(str2))
-    union = len(str1.union(str2))
+#     inter = len(str1.intersection(str2))
+#     union = len(str1.union(str2))
     
-    similarity = (inter/union) if union > 0 else 0
-    similarity_perc = similarity * 100
-    return similarity_perc
+#     similarity = (inter/union) if union > 0 else 0
+#     similarity_perc = similarity * 100
+#     return similarity_perc
 
 def str_similarity(product, user_input):
     user_input=user_input.lower().split()
@@ -120,7 +120,7 @@ while(not items_found):
                 links_lst[prod_name]= link_temp
             if(code_run is False):
                 if(items_in_lst<=10):
-                    if(jacc_similarity(product_name,name_item)>20):
+                    if(str_similarity):
                         if(((string_to_int)(product_price)==0) or (product_name=='')):
                             continue
                         items_lst[product_name]=(string_to_int(product_price))

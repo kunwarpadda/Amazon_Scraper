@@ -43,21 +43,6 @@ def string_to_int(str):
         len1-=1     
     return sum
 
-# def jacc_similarity(st1, st2):
-# #calculates the similarity perc by divind the nukmber of same words to the total number of words
-#     st1=st1.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
-#     st2=st2.replace(',',' ').replace('-',' ').replace('(',' ').replace(')',' ').replace(':',' ')
-#     str1 = set(st1.lower().split())
-#     str2 = set(st2.lower().split())
-    
-#     inter = len(str1.intersection(str2))
-#     union = len(str1.union(str2))
-    
-#     similarity = (inter/union) if union > 0 else 0
-#     similarity_perc = similarity * 100
-#     return similarity_perc
-
-
 #calculates the similarity perc by dividing the number of words found in the product description that match the user input 
 #to the total number of words in the product description
 def str_similarity(product, user_input):
